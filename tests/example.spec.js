@@ -10,10 +10,16 @@ test('has title', async ({ page, context }) => {
   });
 
   await page.goto('https://denis-domanskii.github.io/playwright-download-intercept-issue/');
-  await page.getByText("Download (with 'download' attr)").click();
-  await page.getByText("Download (with 'download' attr)").click();
 
-  await page.waitForTimeout(5000);
+  // FAIL: <a> tag with download is invisible for DevTools and Playwright intercept
+  const downloadPromise1 = page.waitForEvent('download');
+  await page.getByText("Download (with 'download' attr)").click();
+  await downloadPromise1;
+
+  // SUCCESS: <a> tag with download is visible for DevTools and Playwright intercept
+  const downloadPromise2 = page.waitForEvent('download');
+  await page.getByText("Download (without 'download' attr)").click();
+  await downloadPromise2;
 
   expect(interceptionsCount).toBe(2);
 });
