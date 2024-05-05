@@ -4,17 +4,16 @@ const { test, expect } = require('@playwright/test');
 test('has title', async ({ page, context }) => {
   let interceptionsCount = 0;
 
-  await context.route('https://filesampleshub.com/download/archive/zip/sample1.zip', async route => {
+  await context.route('https://denis-domanskii.github.io/playwright-download-intercept-issue/archive.zip', async route => {
     interceptionsCount++;
-    const headers = route.request().headers();
-    headers['added-header'] = 'test value';
-    await route.continue({ headers });
+    await route.continue();
   });
 
-  await page.goto('https://filesampleshub.com/format/archive/zip');
-  await page.getByText('Download sample zip file').first().click();
+  await page.goto('https://denis-domanskii.github.io/playwright-download-intercept-issue/');
+  await page.getByText("Download (with 'download' attr)").click();
+  await page.getByText("Download (with 'download' attr)").click();
 
   await page.waitForTimeout(5000);
 
-  expect(interceptionsCount).toBe(1);
+  expect(interceptionsCount).toBe(2);
 });
